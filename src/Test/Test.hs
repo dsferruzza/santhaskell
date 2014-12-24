@@ -1,16 +1,22 @@
 {-# OPTIONS_GHC -F -pgmF htfpp #-}
-module Test.Test where
+module Main where
 
 import Test.Framework
 import System.Random
-import Main
+import Santhaskell
 
 main = htfMain htf_thisModulesTests
 
 instance Arbitrary Person where
-	arbitrary = do
-		name <- arbitrary
-		return $ Person name
+    arbitrary = do
+        name <- arbitrary
+        return $ Person name
 
-prop_shuffle :: [Person] -> Int -> Bool
-prop_shuffle l seed = l /= shuffle l (mkStdGen seed)
+prop_suffleGiveASimilarList :: [Person] -> Int -> Bool
+prop_suffleGiveASimilarList l seed = (length l) == (length $ shuffle l (mkStdGen seed))
+
+prop_shuffleKeepElements :: [Person] -> Int -> Bool
+prop_shuffleKeepElements l seed = foldl (&&) True hasElement
+    where
+        sl = shuffle l (mkStdGen seed)
+        hasElement = map (\i -> elem i sl) l
