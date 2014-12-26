@@ -29,6 +29,9 @@ main = do
     let result = randomDraw people gen
 
     -- Display result
+    putStrLn ""
+    putStrLn "Results:"
+    putStrLn ""
     putStrLn $ makeOutput result
 
     -- Write it to a file
