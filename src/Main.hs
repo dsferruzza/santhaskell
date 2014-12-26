@@ -2,15 +2,27 @@ module Main where
 
 import Santhaskell
 import qualified Data.Set as Set
+import Data.List
 import System.Random
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getDirectoryContents)
+import Control.Monad (filterM, liftM, liftM2)
+import Text.Regex.Posix ((=~))
+
+inputFile :: FilePath
+inputFile = "input.txt"
+
+outputDir :: FilePath
+outputDir = "output/"
 
 main :: IO ()
 main = do
     -- Get a set of people from the input file
-    input <- readFile "input.txt"
+    input <- readFile inputFile
     let l = filter (not.null) (lines input)
     let people = Set.map Person (Set.fromList l)
+
+    -- Get exisiting random draws
+    --contents <- getExistingRandowDraws
 
     -- Make a random draw
     gen <- getStdGen 
@@ -22,11 +34,23 @@ main = do
     -- Write it to a file
     writeResult result
 
+getExistingRandowDraws :: IO [String]
+getExistingRandowDraws = do
+    directoryContent <- getDirectoryContents outputDir
+    let matchPattern file = file =~ (outputDir ++ "[0-9]{4}[.]txt") :: Bool
+    let hasValidPattern file = liftM matchPattern (return file) :: IO Bool
+    let isValid file = liftM2 (&&) (doesFileExist file) (hasValidPattern file) :: IO Bool
+    files <- filterM isValid $ fmap (outputDir ++) directoryContent :: IO [FilePath]
+    let chosenFiles = take 2 $ reverse $ sort $ files
+    putStrLn $ "Importing old results from " ++ (show chosenFiles)
+    content <- sequence $ fmap (readFile) chosenFiles :: IO [String]
+    return content
+
 -- Write result to an output file
 writeResult :: Set.Set RandomDrawResult -> IO ()
 writeResult result = do
     year <- getCurrentYear
-    let out = "output/" ++ year ++ ".txt"
+    let out = outputDir ++ year ++ ".txt"
     exists <- doesFileExist out
     if exists
         then do
