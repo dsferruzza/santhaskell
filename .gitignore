@@ -2,3 +2,5 @@ dist
 .HTF
 input.txt
 output
+*.sandbox.config
+.cabal-sandbox

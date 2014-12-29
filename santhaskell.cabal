@@ -15,7 +15,7 @@ executable santhaskell
   ghc-options:         -Wall
   hs-source-dirs:      src
   main-is:             Main.hs
-  build-depends:       base ==4.6.*,
+  build-depends:       base >=4.6,
                        containers,
                        random,
                        time,
@@ -27,6 +27,7 @@ executable santhaskell
 
 test-suite test-santhaskell
   type:                exitcode-stdio-1.0
+  ghc-options:         -Wall
   hs-source-dirs:      src
   main-is:             Test/Test.hs
   build-depends:       base ==4.*,

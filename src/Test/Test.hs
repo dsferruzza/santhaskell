@@ -1,13 +1,14 @@
-{-# OPTIONS_GHC -F -pgmF htfpp #-}
+{-# OPTIONS_GHC -F -pgmF htfpp -fno-warn-orphans #-}
 module Main where
 
 import Test.Framework
-import System.Random
+import System.Random (mkStdGen)
 import Data.List
 import qualified Data.Set as Set
 
 import Santhaskell
 
+main :: IO ()
 main = htfMain htf_thisModulesTests
 
 instance Arbitrary Person where
