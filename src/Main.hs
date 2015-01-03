@@ -1,12 +1,16 @@
 module Main where
 
 import Santhaskell
+import Parsers
+import System.IO.UTF8
+import Prelude hiding (readFile, writeFile, putStrLn, getLine)
 import qualified Data.Set as Set
 import Data.List
 import System.Random
 import System.Directory (doesFileExist, getDirectoryContents)
 import Control.Monad (filterM, liftM, liftM2)
 import Text.Regex.Posix ((=~))
+import Text.Parsec.Error
 
 inputFile :: FilePath
 inputFile = "input.txt"
@@ -18,8 +22,18 @@ main :: IO ()
 main = do
     -- Get a set of people from the input file
     input <- readFile inputFile
-    let l = filter (not.null) (lines input)
-    let people = Set.map Person (Set.fromList l)
+    let parsedInput = parseInput input
+    either parseError doRandomDraw parsedInput
+    --let l = filter (not.null) (lines input)
+    --let people = Set.map Person (Set.fromList l)
+
+parseError :: ParseError -> IO ()
+parseError e = do
+    putStrLn $ "Can't parse input !\n" ++ (show e)
+
+doRandomDraw :: [Person] -> IO ()
+doRandomDraw l = do
+    let people = Set.fromList l
 
     -- Get exisiting random draws
     --contents <- getExistingRandowDraws
